@@ -1,7 +1,5 @@
 # AirHygro 🌦️
 
-![AirHygro Banner](assets/1.png) <!-- Replace with a custom banner or animated GIF -->
-
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://flutter.dev)
 [![Platform](https://img.shields.io/badge/platform-flutter-blue)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
@@ -21,22 +19,6 @@ AirHygro is a cross-platform weather app built with Flutter. It fetches your cur
 - **Beautiful UI:** Modern, visually rich interface with custom graphics and icons.
 - **Cross-Platform:** Runs on Android, iOS, macOS, Linux, Windows, and Web.
 - **Location Awareness:** Uses device location to provide local weather data.
-
----
-
-## <img src="https://img.icons8.com/color/48/000000/picture.png" width="24"/> Screenshots & Animations
-
-| Home Screen           | Weather Details           | Animated Demo            |
-| --------------------- | ------------------------- | ------------------------ |
-| ![Home](assets/1.png) | ![Details](assets/11.png) | ![Demo](assets/demo.gif) |
-
-<details>
-  <summary>🌤️ <b>See More Screens</b></summary>
-
-![Screen3](assets/2.png)
-![Screen4](assets/3.png)
-
-</details>
 
 ---
 
@@ -134,4 +116,4 @@ Example widget test is provided in `test/widget_test.dart`.
 
 ---
 
-**_Feel free to add more screenshots, GIFs, or update this README as the project evolves!_**
+**_Feel free to update this README as the project evolves!_**
