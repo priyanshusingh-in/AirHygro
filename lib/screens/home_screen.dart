@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:airhygro/bloc/weather_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -112,17 +113,12 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildWeatherContent(BuildContext context, WeatherState state) {
     if (state is WeatherLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(height: 20),
-            Text(
-              'Loading weather data...',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ],
+      return Center(
+        child: Lottie.asset(
+          'assets/weather icon-Og4Gs.json',
+          width: 200,
+          height: 200,
+          fit: BoxFit.contain,
         ),
       );
     }
