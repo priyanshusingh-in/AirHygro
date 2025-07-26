@@ -42,12 +42,34 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
           ),
         );
 
-        Weather weather = await wf.currentWeatherByLocation(
+        // Fetch current weather for immediate display
+        Weather currentWeather = await wf.currentWeatherByLocation(
           position.latitude,
           position.longitude,
         );
 
-        emit(WeatherSuccess(weather));
+        // Fetch 5-day forecast to get proper min/max temperatures
+        List<Weather> forecast = await wf.fiveDayForecastByLocation(
+          position.latitude,
+          position.longitude,
+        );
+
+        // Debug: Print what we're getting from the API
+        debugPrint(
+            'Current weather tempMin: ${currentWeather.tempMin?.celsius}');
+        debugPrint(
+            'Current weather tempMax: ${currentWeather.tempMax?.celsius}');
+        debugPrint('Forecast length: ${forecast.length}');
+
+        if (forecast.isNotEmpty) {
+          debugPrint(
+              'First forecast tempMin: ${forecast.first.tempMin?.celsius}');
+          debugPrint(
+              'First forecast tempMax: ${forecast.first.tempMax?.celsius}');
+          debugPrint('First forecast date: ${forecast.first.date}');
+        }
+
+        emit(WeatherSuccess(currentWeather, forecast));
       } catch (e) {
         // Log error for debugging
         debugPrint('Error fetching weather: $e');

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:airhygro/bloc/weather_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:weather/weather.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -59,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                     width: 300,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.deepPurple.withOpacity(0.8),
+                      color: Colors.deepPurple.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -71,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                     width: 300,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.deepPurple.withOpacity(0.8),
+                      color: Colors.deepPurple.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -153,15 +154,87 @@ class HomeScreen extends StatelessWidget {
     }
 
     if (state is WeatherSuccess) {
-      final weather = state.weather;
+      final currentWeather = state.currentWeather;
+      final forecast = state.forecast;
       final now = DateTime.now();
       final timeFormat = DateFormat('EEEE d • h:mm a');
+
+      // Get today's forecast for min/max temperatures
+      double? calculatedTodayMin;
+      double? calculatedTodayMax;
+
+      if (forecast.isNotEmpty) {
+        // Find today's forecast by comparing dates
+        final today = DateTime(now.year, now.month, now.day);
+
+        // Debug: Print forecast dates to understand the data structure
+        debugPrint('Current date: $today');
+        for (int i = 0; i < forecast.length; i++) {
+          debugPrint('Forecast $i date: ${forecast[i].date}');
+          debugPrint('Forecast $i tempMin: ${forecast[i].tempMin?.celsius}');
+          debugPrint('Forecast $i tempMax: ${forecast[i].tempMax?.celsius}');
+        }
+
+        // Calculate actual min/max for today from all hourly forecasts
+        for (final weather in forecast) {
+          if (weather.date != null) {
+            final forecastDate = DateTime(
+              weather.date!.year,
+              weather.date!.month,
+              weather.date!.day,
+            );
+
+            // Check if this forecast is for today
+            if (forecastDate.isAtSameMomentAs(today)) {
+              // Update min temperature
+              if (weather.temperature?.celsius != null) {
+                final temp = weather.temperature!.celsius!;
+                if (calculatedTodayMin == null || temp < calculatedTodayMin!) {
+                  calculatedTodayMin = temp;
+                }
+                if (calculatedTodayMax == null || temp > calculatedTodayMax!) {
+                  calculatedTodayMax = temp;
+                }
+              }
+            }
+          }
+        }
+
+        debugPrint(
+            'Calculated today min: $calculatedTodayMin, max: $calculatedTodayMax');
+      }
+
+      // Debug: Print what we're using for min/max
+      debugPrint('Current weather tempMin: ${currentWeather.tempMin?.celsius}');
+      debugPrint('Current weather tempMax: ${currentWeather.tempMax?.celsius}');
+      debugPrint('Today forecast tempMin: ${calculatedTodayMin}');
+      debugPrint('Today forecast tempMax: ${calculatedTodayMax}');
+
+      // Calculate fallback min/max if forecast data is not available or same values
+      double? fallbackMin;
+      double? fallbackMax;
+
+      if (currentWeather.temperature?.celsius != null) {
+        final currentTemp = currentWeather.temperature!.celsius!;
+        // Use a reasonable range: -3 to +3 degrees from current temperature
+        fallbackMin = currentTemp - 3;
+        fallbackMax = currentTemp + 3;
+        debugPrint('Fallback min/max calculated: $fallbackMin - $fallbackMax');
+      }
+
+      // Determine final min/max values to display
+      final displayMin =
+          calculatedTodayMin ?? currentWeather.tempMin?.celsius ?? fallbackMin;
+      final displayMax =
+          calculatedTodayMax ?? currentWeather.tempMax?.celsius ?? fallbackMax;
+
+      debugPrint('Final display min: $displayMin, max: $displayMax');
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '📍${weather.areaName ?? 'Unknown Location'}',
+            '📍${currentWeather.areaName ?? 'Unknown Location'}',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w300,
@@ -179,7 +252,7 @@ class HomeScreen extends StatelessWidget {
           Image.asset('assets/1.png'),
           Center(
             child: Text(
-              '${weather.temperature?.celsius?.round()}°C',
+              '${currentWeather.temperature?.celsius?.round()}°C',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 55,
@@ -189,7 +262,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Center(
             child: Text(
-              weather.weatherMain?.toUpperCase() ?? 'UNKNOWN',
+              currentWeather.weatherMain?.toUpperCase() ?? 'UNKNOWN',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 25,
@@ -228,7 +301,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        _formatTime(weather.sunrise),
+                        _formatTime(currentWeather.sunrise),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -254,7 +327,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        _formatTime(weather.sunset),
+                        _formatTime(currentWeather.sunset),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -289,7 +362,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${weather.tempMax?.celsius?.round()}°C',
+                        '${displayMax?.round()}°C',
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -315,7 +388,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${weather.tempMin?.celsius?.round()}°C',
+                        '${displayMin?.round()}°C',
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
