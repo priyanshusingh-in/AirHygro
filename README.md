@@ -43,7 +43,45 @@ flutter pub get
 flutter run
 ```
 
-> The weather API key is currently hardcoded in `lib/data/my_data.dart`. For production, consider securing this key.
+> **Important:** You need to set up your own API key. See the [API Key Setup](#-api-key-setup) section below.
+
+</details>
+
+---
+
+## <img src="https://img.icons8.com/color/48/000000/key.png" width="24"/> API Key Setup
+
+<details>
+  <summary>Click to expand</summary>
+
+### Getting Your API Key
+
+1. **Visit [OpenWeatherMap](https://openweathermap.org/api)** and create a free account
+2. **Navigate to your API keys** section
+3. **Copy your API key**
+
+### Setting Up Environment Variables
+
+1. **Copy the template file:**
+
+   ```sh
+   cp .env.example .env
+   ```
+
+2. **Edit the `.env` file** and replace `your_api_key_here` with your actual API key:
+
+   ```
+   WEATHER_API_KEY=your_actual_api_key_here
+   ```
+
+3. **Never commit your `.env` file** - it's already added to `.gitignore`
+
+### Security Notes
+
+- ✅ The `.env` file is automatically ignored by Git
+- ✅ API keys are loaded securely at runtime
+- ✅ Template file (`.env.example`) is safe to commit
+- ⚠️ Keep your API key private and never share it publicly
 
 </details>
 
